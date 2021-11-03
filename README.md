@@ -124,6 +124,11 @@ Start the server
 ## Roadmap do TransferWay
 
 - Utilizar Repositories para regras de negócio
+- Utilizar middlewares de autenticação nas rotas de carteira e de usuários
+- Trocar o id por UUID
+- Utilizar JWT auth nas rotas de API
+- Criar serviço de confirmação de e-mail
+- Hospedar o projeto na digital ocean
 - Criar um JOB para o serviço de e-mail
 - Arquitetar um container docker para o projeto
 - Aplicação de testes unitários a partir do PHP Unit
