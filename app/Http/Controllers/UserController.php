@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Hash;
 use App\Http\Requests\StoreUserRequest;
 use App\Http\Requests\UpdateUserRequest;
 use App\Http\Requests\DestroyUserRequest;
@@ -54,23 +56,22 @@ class UserController extends Controller
         if($user->save()){
             return response()->json([
                 'message' => 'Usuário cadastrado com sucesso',
-                'data' => $user
+                'user' => $user
             ], Response::HTTP_CREATED);
         }
         return response()->json([
             'error' => 'Erro ao cadastrar usuário'
         ], Response::HTTP_BAD_REQUEST);
     }
-
     /**
      * Display the user resource.
      *
      * @param  \App\Models\User  $user
      * @return \Illuminate\Http\Response
      */
-    public function show(User $user)
+    public function show(int $id)
     {
-        $user = $this->user->find($user->id);
+        $user = $this->user->find($id);
         if(!$user){
             return response()->json([
                 'error' => 'Usuário não encontrado'
@@ -88,19 +89,18 @@ class UserController extends Controller
      */
     public function update(UpdateUserRequest $request)
     {
-        $user = $this->user->findOrFail($request->id);
+        $user = $this->user->find($request->user_id);
         if(!$user){
             return response()->json([
                 'error' => 'Usuário não encontrado'
             ], Response::HTTP_NOT_FOUND);
         }
-        $user->name = $request->name;
-        $user->password = Hash::make($request->password);
         $user->email = $request->email;
+        $user->password = Hash::make($request->password);
         $user->save();
         return response()->json([
             'message' => 'Usuário atualizado com sucesso',
-            'data' => $user
+            $user
         ], Response::HTTP_OK);
     }
 
@@ -110,17 +110,18 @@ class UserController extends Controller
      * @param  \App\Models\User  $user
      * @return \Illuminate\Http\Response
      */
-    public function destroy(User $user)
+    public function destroy(int $id)
     {
-        $user = $this->user->find($user->id);
-        if($user->destroy()){
+        $user = $this->user->find($id);
+        if(!$user){
             return response()->json([
-                'message' => 'Usuário deletado com sucesso'
-            ], Response::HTTP_OK);
+                'error' => 'Usuário não encontrado'
+            ], Response::HTTP_NOT_FOUND);
         }
+        $user->delete();
         return response()->json([
-            'error' => 'Usuário não encontrado'
-        ], Response::HTTP_NOT_FOUND);
+            'message' => 'Usuário deletado com sucesso'
+        ], Response::HTTP_OK);
     }
     /**
      * Return user balance

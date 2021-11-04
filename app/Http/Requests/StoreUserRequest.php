@@ -23,11 +23,11 @@ class StoreUserRequest extends FormRequest
     public function rules()
     {
         return [
-            'name'=> 'required|max:255',
-            'email' => 'required|email|unique:users',
-            'document' => 'required|max:18|min:11',
-            'type'=> ['required', Rule::in(['PJ', 'PF'])],
-            'password' => 'required|min:6|confirmed',
+            // 'name'=> 'required|max:255',
+            // 'email' => 'required|email|unique:users',
+            // 'document' => 'required|max:18|min:11',
+            // 'type'=> ['required', Rule::in(['PJ', 'PF'])],
+            // 'password' => 'required|min:6|confirmed',
         ];
     }
 }

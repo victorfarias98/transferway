@@ -2,6 +2,7 @@
 
 namespace App\Services;
 use GuzzleHttp\Client;
+use Illuminate\Http\Response;
 use App\Models\User;
 use App\Services\AuthorizationService;
 use App\Services\NotificationService;

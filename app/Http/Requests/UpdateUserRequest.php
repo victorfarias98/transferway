@@ -24,12 +24,8 @@ class UpdateUserRequest extends FormRequest
     public function rules()
     {
         return [
-            'user_id' => 'required|integer',
-            'name'=> 'max:255',
             'email' => 'email|unique:users',
-            'document' => 'required|max:18|min:11',
-            'type'=> ['required', Rule::in(['PJ', 'PF'])],
-            'password' => 'required|min:6|confirmed',
+            'password' => 'min:6',
         ];
     }
 }

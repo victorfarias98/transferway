@@ -1,11 +1,12 @@
 <?php
 
 namespace App\Services;
+use Illuminate\Http\Response;
 use GuzzleHttp\Client;
 
 class AuthorizationService
 {
-    const base_uri = 'http://run.mocky.io/v3';
+    const base_uri = 'http://run.mocky.io/v3/';
 
     public function __construct()
     {
@@ -17,7 +18,7 @@ class AuthorizationService
 
     public function authorizeTransaction() : bool
     {
-        $response = $this->client->request('GET','/8fafdd68-a090-496f-8c9a-3442cf30dae6');
+        $response = $this->client->request('GET','8fafdd68-a090-496f-8c9a-3442cf30dae6');
         if($response->getStatusCode() !== Response::HTTP_OK)
         {
             return false;

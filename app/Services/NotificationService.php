@@ -1,17 +1,18 @@
 <?php
 
 namespace App\Services;
+use Illuminate\Http\Response;
 use GuzzleHttp\Client;
 
 class NotificationService{
 
-    const base_uri = "http://o4d9z.mocklab.io";
+    const base_uri = 'http://o4d9z.mocklab.io';
 
     public function __construct()
     {
         $this->client = new Client([
             'base_uri' => self::base_uri,
-            'timeout'  => 2.0,
+            'timeout'  => 30,
         ]);
     }
     public function sendNotice(): bool
@@ -21,6 +22,6 @@ class NotificationService{
             return false;
         }
         $body = json_decode($response->getBody());
-        return $body->message === 'Autorizado';
+        return $body->message === 'Success';
     }
 }
