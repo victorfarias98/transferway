@@ -14,7 +14,7 @@ class AuthorizationServiceProvider extends ServiceProvider
     public function register()
     {
         $this->app->bind(AuthorizationService::class, function ($app) {
-            return new AuthorizationService(config('authorizathion_client'));
+            return new AuthorizationService();
         });
     }
 

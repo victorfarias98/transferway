@@ -5,24 +5,24 @@ use GuzzleHttp\Client;
 
 class AuthorizationService
 {
-    private $config;
-    public function __construct($config)
+    const base_uri = 'http://run.mocky.io/v3';
+
+    public function __construct()
     {
-        $this->config = $config;
-        $this->client = new Client($config);
+        $this->client = new Client([
+            'base_uri' => self::base_uri,
+            'timeout'  => 5,
+        ]);
     }
 
     public function authorizeTransaction() : bool
     {
-        $response = $this->client->request('GET','');
-        if($response->getStatusCode() === 200)
+        $response = $this->client->request('GET','/8fafdd68-a090-496f-8c9a-3442cf30dae6');
+        if($response->getStatusCode() !== Response::HTTP_OK)
         {
-            $body = json_decode($response->getBody());
-            if($body->message === 'Autorizado')
-            {
-                return true;
-            }
+            return false;
         }
-        return false;
+        $body = json_decode($response->getBody());
+        return $body->message === 'Autorizado';
     }
 }

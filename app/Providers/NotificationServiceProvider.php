@@ -14,7 +14,7 @@ class NotificationServiceProvider extends ServiceProvider
     public function register()
     {
         $this->app->bind(NotificationService::class, function ($app) {
-            return new NotificationService(config('notification_client'));
+            return new NotificationService();
         });
     }
 

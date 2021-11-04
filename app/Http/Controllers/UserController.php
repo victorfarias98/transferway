@@ -27,15 +27,15 @@ class UserController extends Controller
      */
     public function index()
     {
-        $users = $this->user->all();
+        $users = $this->user->paginate();
+        return response()->json([
+            'error' => 'Nenhum usuário encontrado'
+        ], Response::HTTP_NOT_FOUND);
         if($users){
             return response()->json([
-                "data" => $users
-            ], 200);
+                'data' => $users
+            ], Response::HTTP_OK);
         }
-        return response()->json([
-            "error" => "Nenhum usuário cadastrado"
-        ], 400);
     }
     /**
      * Store a newly created user in storage.
@@ -45,16 +45,21 @@ class UserController extends Controller
      */
     public function store(StoreUserRequest $request)
     {
-        $user = $this->user->create($request->all());
-        if($user){
+        $user = $this->user;
+        $user->name = $request->name;
+        $user->document = $request->document;
+        $user->type = $request->type;
+        $user->password = Hash::make($request->password);
+        $user->email = $request->email;
+        if($user->save()){
             return response()->json([
-                "message" => "Usuário cadastrado com sucesso",
-                "data" => $user
-            ], 201);
+                'message' => 'Usuário cadastrado com sucesso',
+                'data' => $user
+            ], Response::HTTP_CREATED);
         }
         return response()->json([
-            "error" => "Erro ao cadastrar usuário"
-        ], 400);
+            'error' => 'Erro ao cadastrar usuário'
+        ], Response::HTTP_BAD_REQUEST);
     }
 
     /**
@@ -66,14 +71,14 @@ class UserController extends Controller
     public function show(User $user)
     {
         $user = $this->user->find($user->id);
-        if($user){
+        if(!$user){
             return response()->json([
-                "data" => $user
-            ], 200);
+                'error' => 'Usuário não encontrado'
+            ], Response::HTTP_NOT_FOUND);
         }
         return response()->json([
-            "error" => "Usuário não encontrado"
-        ], 400);
+            $user
+        ], Response::HTTP_OK);
     }
     /**
      * Update the specified user in storage.
@@ -83,19 +88,20 @@ class UserController extends Controller
      */
     public function update(UpdateUserRequest $request)
     {
-        $user = $this->user->find($request->id);
-        if($user){
-            $user->name = $request->name;
-            $user->email = $request->email;
-            $user->save();
+        $user = $this->user->findOrFail($request->id);
+        if(!$user){
             return response()->json([
-                "message" => "Usuário atualizado com sucesso",
-                "data" => $user
-            ], 200);
+                'error' => 'Usuário não encontrado'
+            ], Response::HTTP_NOT_FOUND);
         }
+        $user->name = $request->name;
+        $user->password = Hash::make($request->password);
+        $user->email = $request->email;
+        $user->save();
         return response()->json([
-            "error" => "Usuário não encontrado"
-        ], 400);
+            'message' => 'Usuário atualizado com sucesso',
+            'data' => $user
+        ], Response::HTTP_OK);
     }
 
     /**
@@ -109,12 +115,12 @@ class UserController extends Controller
         $user = $this->user->find($user->id);
         if($user->destroy()){
             return response()->json([
-                "message" => "Usuário deletado com sucesso"
-            ], 200);
+                'message' => 'Usuário deletado com sucesso'
+            ], Response::HTTP_OK);
         }
         return response()->json([
-            "error" => "Usuário não encontrado"
-        ], 400);
+            'error' => 'Usuário não encontrado'
+        ], Response::HTTP_NOT_FOUND);
     }
     /**
      * Return user balance
@@ -126,11 +132,11 @@ class UserController extends Controller
     {
         try {
             $response = $this->walletService->getBalance($request->user_id);
-            return response()->json($response, 200);
+            return response()->json($response, Response::HTTP_OK);
         } catch (\Exception $e) {
             return response()->json([
-                "error" => $e->getMessage()
-        ], 400);
+                'error' => $e->getMessage()
+            ], Response::HTTP_BAD_REQUEST);
         }
     }
     /**
@@ -144,11 +150,11 @@ class UserController extends Controller
         if ($request->validated()) {
             try {
                 $response = $this->walletService->deposit($request->user_id, $request->amount);
-                return response()->json($response, 200);
+                return response()->json($response, Response::HTTP_OK);
             } catch (\Exception $e) {
                 return response()->json([
-                "error" => $e->getMessage()
-            ], 400);
+                    'error' => $e->getMessage()
+                ], Response::HTTP_BAD_REQUEST);
             }
         }
     }
@@ -162,11 +168,11 @@ class UserController extends Controller
         if ($request->validated()) {
             try {
                 $response = $this->walletService->transfer($request->payer_id, $request->payee_id, $request->amount);
-                return response()->json($response, 200);
+                return response()->json($response, Response::HTTP_OK);
             } catch (\Exception $e) {
                 return response()->json([
-                    "error" => $e->getMessage()
-                ], 400);
+                    'error' => $e->getMessage()
+                ], Response::HTTP_BAD_REQUEST);
             }
         }
     }
